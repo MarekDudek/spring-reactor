@@ -9,7 +9,7 @@ import org.springframework.core.task.TaskExecutor;
 import reactor.core.publisher.Flux;
 import reactor.core.scheduler.Schedulers;
 
-import static java.time.Duration.ofMillis;
+import static java.time.Duration.ofNanos;
 
 @SpringBootApplication
 public class SpringReactorApplication
@@ -26,10 +26,9 @@ public class SpringReactorApplication
     {
         return args ->
                 executor.execute(() ->
-                        Flux.interval(ofMillis(1)).
+                        Flux.interval(ofNanos(1)).
                                 name("interval").
                                 metrics().
-                                log().
                                 subscribe()
                 );
     }
