@@ -25,7 +25,6 @@ The following guides illustrate how to use some features concretely:
 * Reactor
     * metrics in Grafana
 * Logback with Splunk
-    * springbooty way
 * Kafka and Kafka Stream
 * JMS messaging
 * Reactive Postgres
@@ -34,3 +33,5 @@ The following guides illustrate how to use some features concretely:
 * Event sourcing
 * Security
 * Java 11
+* Kubernetes
+* Azure
