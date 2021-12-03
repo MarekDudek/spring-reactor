@@ -21,9 +21,13 @@ The following guides illustrate how to use some features concretely:
 * Monitoring
     * Grafana
     * VisualVM
+    * Actuator
     * Flight recorder
+    * JMX
 * Reactor
     * metrics in Grafana
+* Control
+  * JMS
 * Logback with Splunk
 * Kafka and Kafka Stream
 * JMS messaging
