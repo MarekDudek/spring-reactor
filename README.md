@@ -19,17 +19,24 @@ The following guides illustrate how to use some features concretely:
 
 # To do list
 * Monitoring
-    * Grafana
-    * VisualVM
+    * ~~Grafana~~
+    * ~~VisualVM~~
     * Actuator
     * Flight recorder
     * JMX
 * Reactor
-    * metrics in Grafana
+    * ~~metrics in Grafana~~
 * Control
-  * JMS
-* Logback with Splunk
-* Kafka and Kafka Stream
+  * JMX
+  * CLI
+* Logging
+  * Logback 
+  * MDC
+  * Splunk
+* Kafka
+  * Kafka
+  * Kafka Streams
+  * KSQL
 * JMS messaging
 * Reactive Postgres
 * Web with React
