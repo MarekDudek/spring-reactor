@@ -26,6 +26,9 @@ The following guides illustrate how to use some features concretely:
     * JMX
 * Reactor
     * ~~metrics in Grafana~~
+* Tracing
+  * Zipkin
+  * Spring Sleuth
 * Control
   * JMX
   * CLI
@@ -41,7 +44,7 @@ The following guides illustrate how to use some features concretely:
 * Reactive Postgres
 * Web with React
 * Transactional processing of all inputs
-* Event sourcing
+* Event sourcing / CQRS
 * Security
 * Java 11
 * Kubernetes

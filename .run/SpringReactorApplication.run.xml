@@ -1,0 +1,12 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="SpringReactorApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+    <module name="spring-reactor" />
+    <option name="SPRING_BOOT_MAIN_CLASS" value="md.springreactor.SpringReactorApplication" />
+    <option name="VM_PARAMETERS" value="-Xms256m -Xmx1g -DLOG_FILE=./logs/spring.log" />
+    <option name="ALTERNATIVE_JRE_PATH" />
+    <option name="SHORTEN_COMMAND_LINE" value="NONE" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>
