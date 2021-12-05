@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<configuration debug="true" scan="true" scanPeriod="1 second">
+<configuration debug="true" scan="true" scanPeriod="30 seconds">
 
     <conversionRule conversionWord="clr" converterClass="org.springframework.boot.logging.logback.ColorConverter" />
     <conversionRule conversionWord="wex" converterClass="org.springframework.boot.logging.logback.WhitespaceThrowableProxyConverter" />
@@ -35,7 +35,11 @@
         </rollingPolicy>
     </appender>
 
-    <root>
+
+    <logger name="org.springframework" level="DEBUG"/>
+    <logger name="com.codahale.metrics.graphite.PickledGraphite" level="INFO"/>
+
+    <root leve="DEBUG">
         <appender-ref ref="CONSOLE" />
         <appender-ref ref="FILE" />
     </root>

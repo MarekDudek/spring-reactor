@@ -49,3 +49,8 @@ The following guides illustrate how to use some features concretely:
 * Java 11
 * Kubernetes
 * Azure
+
+# Docker
+## Splunk
+
+`docker run -d -e "SPLUNK_START_ARGS=--accept-license" -e "SPLUNK_USER=root" -p "8000:8000" --name splunk store/splunk/enterprise`
