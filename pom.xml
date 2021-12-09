@@ -22,7 +22,6 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>1.8</java.version>
-        <micrometer-registry-graphite.version>1.3.0</micrometer-registry-graphite.version>
     </properties>
 
     <dependencies>
@@ -43,7 +42,7 @@
         <dependency>
             <groupId>io.micrometer</groupId>
             <artifactId>micrometer-registry-graphite</artifactId>
-            <version>${micrometer-registry-graphite.version}</version>
+            <version>1.8.0</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>
