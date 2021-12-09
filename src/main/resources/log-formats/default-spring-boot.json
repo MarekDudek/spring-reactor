@@ -61,6 +61,12 @@
       },
       {
         "line": "2019-01-15 23:17:08.483  INFO 1860 --- [https-jsse-nio-8443-exec-5] o.apache.coyote.http11.Http11Processor   : Error parsing HTTP request header"
+      },
+      {
+        "line": "2021-12-09 23:33:47.381 DEBUG   --- [main] reactor.util.Loggers                     : Using Slf4j logging framework"
+      },
+      {
+        "line": "2021-12-09 23:33:47.458 DEBUG   --- [Thread-0] o.s.b.d.r.c.RestartClassLoader           : Created RestartClassLoader org.springframework.boot.devtools.restart.classloader.RestartClassLoader@3aaf98d6"
       }
     ]
   }
