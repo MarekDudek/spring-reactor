@@ -4,8 +4,8 @@
     "description": "Log format used by Spring Boot by default",
     "url": "",
     "regex": {
-      "tasko": {
-        "pattern": "^(?<timestamp>\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}.\\d{3})\\s+(?<level>\\w+)\\s+(?<pid>\\d*)\\s+---\\s+\\[\\s*(?<thread>.*)\\]\\s+(?<logger>.*)\\s+:\\s+(?<body>.*)$"
+      "basic": {
+        "pattern": "^(?<timestamp>\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}.\\d{3})\\s+(?<level>\\w*)\\s+(?<pid>\\d*)\\s+---\\s+\\[\\s*(?<thread>.*)\\]\\s+(?<logger>.*)\\s+:\\s+(?<body>.*)$"
       }
     },
     "level-field": "level",
