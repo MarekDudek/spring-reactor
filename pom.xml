@@ -60,6 +60,11 @@
             <artifactId>reactor-test</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.dataformat</groupId>
+            <artifactId>jackson-dataformat-yaml</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
