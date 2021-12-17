@@ -23,7 +23,7 @@ import static org.apache.kafka.clients.producer.ProducerConfig.*;
 
 @Configuration
 @Slf4j
-public class KafkaTopicConfig
+public class KafkaTemplateConfig
 {
     @Autowired
     private KafkaProperties kafkaProperties;
@@ -44,7 +44,7 @@ public class KafkaTopicConfig
         return new KafkaTemplate<>(producerFactory());
     }
 
-    @Value("${md.kafka-topic-config.topic-name}")
+    @Value("${md.kafka-template-config.topic-name}")
     private String topicName;
 
     @Bean
