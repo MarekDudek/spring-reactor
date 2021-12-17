@@ -3,6 +3,7 @@ package md.springreactor.kafka;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import md.springreactor.kafka.docker.Compose;
+import md.springreactor.kafka.docker.MultilineString;
 import md.springreactor.kafka.docker.Renderer;
 import md.springreactor.kafka.docker.Service;
 import org.junit.jupiter.api.Disabled;
@@ -37,6 +38,9 @@ public class DockerComposeConfigGenerationTest
                         put("connect", connect()).
                         put("control-center", controlCenter()).
                         put("ksqldb-server", ksqldbServer()).
+                        put("ksqldb-cli", ksqldbCli()).
+                        put("ksql-datagen", ksqlDatagen()).
+                        put("rest-proxy", restProxy()).
                         build()).
                 build();
     }
@@ -178,6 +182,61 @@ public class DockerComposeConfigGenerationTest
                         put("KSQL_KSQL_LOGGING_PROCESSING_TOPIC_REPLICATION_FACTOR", 1).
                         put("KSQL_KSQL_LOGGING_PROCESSING_TOPIC_AUTO_CREATE", "true").
                         put("KSQL_KSQL_LOGGING_PROCESSING_STREAM_AUTO_CREATE", "true").
+                        build()).
+                build();
+    }
+
+    private Service ksqldbCli()
+    {
+        return Service.builder().
+                image("confluentinc/cp-ksqldb-cli:7.0.1").
+                container_name("ksqldb-cli").
+                depends_on(ImmutableList.of("broker", "connect", "ksqldb-server")).
+                entrypoint("/bin/sh").
+                tty(true).
+                build();
+    }
+
+    private Service ksqlDatagen()
+    {
+        return Service.builder().
+                image("confluentinc/ksqldb-examples:7.0.1").
+                hostname("ksql-datagen").
+                container_name("ksql-datagen").
+                depends_on(ImmutableList.of("ksqldb-server", "broker", "schema-registry", "connect")).
+                command(MultilineString.builder().
+                        lines(ImmutableList.<String>builder().
+                                add("bash -c 'echo Waiting for Kafka to be ready...").
+                                add("cub kafka-ready -b broker:29092 1 40").
+                                add("echo Waiting for Confluent Schema Registry to be ready...").
+                                add("cub sr-ready schema-registry 8081 40").
+                                add("echo Waiting a few seconds for topic creation to finish...").
+                                add("sleep 11").
+                                add("tail -f /dev/null'").
+                                build()).
+                        build()).
+                environment(ImmutableMap.<String, Object>builder().
+                        put("KSQL_CONFIG_DIR", "/etc/ksql").
+                        put("STREAMS_BOOTSTRAP_SERVERS", "broker:29092").
+                        put("STREAMS_SCHEMA_REGISTRY_HOST", "schema-registry").
+                        put("STREAMS_SCHEMA_REGISTRY_PORT", 8081).
+                        build()).
+                build();
+    }
+
+    private Service restProxy()
+    {
+        return Service.builder().
+                image("confluentinc/cp-kafka-rest:7.0.1").
+                depends_on(ImmutableList.of("broker", "schema-registry")).
+                ports(singletonList("8082:8082")).
+                hostname("rest-proxy").
+                container_name("rest-proxy").
+                environment(ImmutableMap.<String, Object>builder().
+                        put("KAFKA_REST_HOST_NAME", "rest-proxy").
+                        put("KAFKA_REST_BOOTSTRAP_SERVERS", "broker:29092").
+                        put("KAFKA_REST_LISTENERS", "http://0.0.0.0:8082").
+                        put("KAFKA_REST_SCHEMA_REGISTRY_URL", "http://schema-registry:8081").
                         build()).
                 build();
     }

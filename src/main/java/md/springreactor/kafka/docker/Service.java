@@ -1,6 +1,7 @@
 package md.springreactor.kafka.docker;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.Builder;
 import lombok.Value;
 
@@ -20,4 +21,8 @@ public class Service
     List<String> depends_on;
     List<String> ports;
     Map<String, Object> environment;
+    String entrypoint;
+    Boolean tty;
+    @JsonSerialize(using = MultilineStringSerializer.class)
+    MultilineString command;
 }
