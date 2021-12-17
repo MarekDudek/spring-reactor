@@ -1,51 +1,65 @@
 package md.springreactor.kafka;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
+import md.springreactor.kafka.docker.Compose;
+import md.springreactor.kafka.docker.Renderer;
+import md.springreactor.kafka.docker.Service;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
-import static com.fasterxml.jackson.dataformat.yaml.YAMLGenerator.Feature.ALWAYS_QUOTE_NUMBERS_AS_STRINGS;
-import static com.fasterxml.jackson.dataformat.yaml.YAMLGenerator.Feature.MINIMIZE_QUOTES;
+import static java.util.Collections.singletonList;
 
+@Disabled
 public class DockerComposeConfigGenerationTest
 {
+
     @Test
-    void test() throws IOException
+    void confluentPlatformKafka() throws IOException
     {
-        Map<String, Object> confluentKafkaPlatform = new LinkedHashMap<>();
-        confluentKafkaPlatform.put("version", "2");
-
-        Map<String, Object> services = new LinkedHashMap<>();
-        LinkedHashMap<Object, Object> zookeeper = new LinkedHashMap<>();
-        zookeeper.put("image", "confluentinc/cp-zookeeper:7.0.1");
-        zookeeper.put("hostname", "zookeeper");
-        zookeeper.put("container_name", "zookeeper");
-        ArrayList<Object> ports = new ArrayList<>();
-        ports.add("2181:2181");
-        zookeeper.put("ports", ports);
-        LinkedHashMap<Object, Object> environment = new LinkedHashMap<>();
-        environment.put("ZOOKEEPER_CLIENT_PORT", 2181);
-        environment.put("ZOOKEEPER_TICK_TIME", 2000);
-        zookeeper.put("environment", environment);
-        services.put("zookeeper", zookeeper);
-        //services.put("broker", new LinkedHashMap<>());
-
-        confluentKafkaPlatform.put("services", services);
-
-
-        YAMLFactory factory = new YAMLFactory().enable(MINIMIZE_QUOTES).enable(ALWAYS_QUOTE_NUMBERS_AS_STRINGS);
-        ObjectMapper mapper = new ObjectMapper(factory);
-        mapper.findAndRegisterModules();
-        String output = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(confluentKafkaPlatform);
-        Files.write(Paths.get("./zookeeper.yaml"), output.getBytes());
+        String output = Renderer.render(compose());
+        Files.write(Paths.get("./src/test/resources/docker/confluent-platform-generated.yaml"), output.getBytes());
         System.out.println(output);
     }
+
+    private Compose compose()
+    {
+        return Compose.builder().
+                version("2").
+                services(ImmutableMap.of(
+                        "zookeeper", zookeeper(),
+                        "broker", broker()
+                )).
+                build();
+    }
+
+    private Service zookeeper()
+    {
+        return Service.builder().
+                image("confluentinc/cp-zookeeper:7.0.1").
+                hostname("zookeeper").
+                container_name("zookeeper").
+                ports(singletonList("2181:2181")).
+                environment(ImmutableMap.of(
+                        "ZOOKEEPER_CLIENT_PORT", 2181,
+                        "ZOOKEEPER_TICK_TIME", 2000
+                )).
+                build();
+    }
+
+    private Service broker()
+    {
+        return Service.builder().
+                image("confluentinc/cp-server:7.0.1").
+                hostname("broker").
+                container_name("broker").
+                depends_on(singletonList("zookeeper")).
+                ports(ImmutableList.of("9092:9092", "9101:9101")).
+                build();
+    }
 }
+
