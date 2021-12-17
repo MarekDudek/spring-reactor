@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.joining;
@@ -78,21 +77,16 @@ public class DockerComposeConfigGenerationTest
                             broker.put("container_name", oldBroker.get("container_name"));
 
                             List<String> oldDependsOn = (List<String>) oldBroker.get("depends_on");
-                            List<Object> dependsOn = new ArrayList<>();
-                            oldDependsOn.forEach(dependsOn::add);
+                            List<Object> dependsOn = new ArrayList<>(oldDependsOn);
                             broker.put("depends_on", dependsOn);
 
                             List<String> oldPorts = (List<String>) oldBroker.get("ports");
-                            List<Object> ports = new ArrayList<>();
-                            oldPorts.forEach(ports::add);
+                            List<Object> ports = new ArrayList<>(oldPorts);
                             broker.put("ports", ports);
 
                             Map<String, Object> oldEnvironment = (Map<String, Object>) oldBroker.get("environment");
-                            Map<String, Object> environment = new LinkedHashMap<>();
-                            for (Entry<String, Object> entry : oldEnvironment.entrySet())
-                                environment.put(entry.getKey(), entry.getValue());
+                            Map<String, Object> environment = new LinkedHashMap<>(oldEnvironment);
                             broker.put("environment", environment);
-
 
                             String name = "broker-" + number;
                             broker.replace("hostname", name);
