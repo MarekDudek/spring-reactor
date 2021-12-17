@@ -35,6 +35,8 @@ public class DockerComposeConfigGenerationTest
                         put("broker", broker()).
                         put("schema-registry", schemaRegistry()).
                         put("connect", connect()).
+                        put("control-center", controlCenter()).
+                        put("ksqldb-server", ksqldbServer()).
                         build()).
                 build();
     }
@@ -73,7 +75,7 @@ public class DockerComposeConfigGenerationTest
                         put("KAFKA_CONFLUENT_BALANCER_TOPIC_REPLICATION_FACTOR", 1).
                         put("KAFKA_TRANSACTION_STATE_LOG_MIN_ISR", 1).
                         put("KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR", 1).
-                        put("KAFKA_JMX_PORT", "9101").
+                        put("KAFKA_JMX_PORT", 9101).
                         put("KAFKA_JMX_HOSTNAME", "localhost").
                         put("KAFKA_CONFLUENT_SCHEMA_REGISTRY_URL", "http://schema-registry:8081").
                         put("CONFLUENT_METRICS_REPORTER_BOOTSTRAP_SERVERS", "broker:29092").
@@ -128,6 +130,54 @@ public class DockerComposeConfigGenerationTest
                         put("CONNECT_CONSUMER_INTERCEPTOR_CLASSES", "io.confluent.monitoring.clients.interceptor.MonitoringConsumerInterceptor").
                         put("CONNECT_PLUGIN_PATH", "/usr/share/java,/usr/share/confluent-hub-components").
                         put("CONNECT_LOG4J_LOGGERS", "org.apache.zookeeper=ERROR,org.I0Itec.zkclient=ERROR,org.reflections=ERROR").
+                        build()).
+                build();
+    }
+
+    private Service controlCenter()
+    {
+        return Service.builder().
+                image("confluentinc/cp-enterprise-control-center:7.0.1").
+                hostname("control-center").
+                container_name("control-center").
+                depends_on(ImmutableList.of("broker", "schema-registry", "connect", "ksqldb-server")).
+                ports(singletonList("9021:9021")).
+                environment(ImmutableMap.<String, Object>builder().
+                        put("CONTROL_CENTER_BOOTSTRAP_SERVERS", "broker:29092").
+                        put("CONTROL_CENTER_CONNECT_CONNECT-DEFAULT_CLUSTER", "connect:8083").
+                        put("CONTROL_CENTER_KSQL_KSQLDB1_URL", "http://ksqldb-server:8088").
+                        put("CONTROL_CENTER_KSQL_KSQLDB1_ADVERTISED_URL", "http://localhost:8088").
+                        put("CONTROL_CENTER_SCHEMA_REGISTRY_URL", "http://schema-registry:8081").
+                        put("CONTROL_CENTER_REPLICATION_FACTOR", 1).
+                        put("CONTROL_CENTER_INTERNAL_TOPICS_PARTITIONS", 1).
+                        put("CONTROL_CENTER_MONITORING_INTERCEPTOR_TOPIC_PARTITIONS", 1).
+                        put("CONFLUENT_METRICS_TOPIC_REPLICATION", 1).
+                        put("PORT", 9021).
+                        build()).
+                build();
+    }
+
+    private Service ksqldbServer()
+    {
+        return Service.builder().
+                image("confluentinc/cp-ksqldb-server:7.0.1").
+                hostname("ksqldb-server").
+                container_name("ksqldb-server").
+                depends_on(ImmutableList.of("broker", "connect")).
+                ports(singletonList("8088:8088")).
+                environment(ImmutableMap.<String, Object>builder().
+                        put("KSQL_CONFIG_DIR", "/etc/ksql").
+                        put("KSQL_BOOTSTRAP_SERVERS", "broker:29092").
+                        put("KSQL_HOST_NAME", "ksqldb-server").
+                        put("KSQL_LISTENERS", "http://0.0.0.0:8088").
+                        put("KSQL_CACHE_MAX_BYTES_BUFFERING", 0).
+                        put("KSQL_KSQL_SCHEMA_REGISTRY_URL", "http://schema-registry:8081").
+                        put("KSQL_PRODUCER_INTERCEPTOR_CLASSES", "io.confluent.monitoring.clients.interceptor.MonitoringProducerInterceptor").
+                        put("KSQL_CONSUMER_INTERCEPTOR_CLASSES", "io.confluent.monitoring.clients.interceptor.MonitoringConsumerInterceptor").
+                        put("KSQL_KSQL_CONNECT_URL", "http://connect:8083").
+                        put("KSQL_KSQL_LOGGING_PROCESSING_TOPIC_REPLICATION_FACTOR", 1).
+                        put("KSQL_KSQL_LOGGING_PROCESSING_TOPIC_AUTO_CREATE", "true").
+                        put("KSQL_KSQL_LOGGING_PROCESSING_STREAM_AUTO_CREATE", "true").
                         build()).
                 build();
     }
