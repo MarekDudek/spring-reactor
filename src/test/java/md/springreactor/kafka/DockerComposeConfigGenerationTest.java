@@ -14,6 +14,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import static java.lang.String.format;
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toMap;
@@ -49,6 +50,7 @@ public class DockerComposeConfigGenerationTest
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     void multiply_brokers() throws FileNotFoundException
     {
         int count = 5;
@@ -80,8 +82,13 @@ public class DockerComposeConfigGenerationTest
                             List<Object> dependsOn = new ArrayList<>(oldDependsOn);
                             broker.put("depends_on", dependsOn);
 
-                            List<String> oldPorts = (List<String>) oldBroker.get("ports");
-                            List<Object> ports = new ArrayList<>(oldPorts);
+                            List<String> ports = new ArrayList<>();
+                            int defaultClientPort = 9092;
+                            int newClientPort = number * 10_000 + defaultClientPort;
+                            ports.add(format("%d:%d", newClientPort, newClientPort));
+                            int defaultJmxPort = 9101;
+                            int newJmxPort = number * 10_000 + defaultJmxPort;
+                            ports.add(format("%d:%d", newJmxPort, defaultJmxPort));
                             broker.put("ports", ports);
 
                             Map<String, Object> oldEnvironment = (Map<String, Object>) oldBroker.get("environment");
@@ -91,8 +98,10 @@ public class DockerComposeConfigGenerationTest
                             String name = "broker-" + number;
                             broker.replace("hostname", name);
                             broker.replace("container_name", name);
+
                             environment = (Map<String, Object>) broker.get("environment");
                             environment.replace("KAFKA_BROKER_ID", number);
+                            environment.replace("KAFKA_ADVERTISED_LISTENERS", format("PLAINTEXT://broker-%d:%d,PLAINTEXT_HOST://localhost:%d", number, defaultClientPort, newClientPort));
                             environment.replace("CONFLUENT_METRICS_REPORTER_BOOTSTRAP_SERVERS", bootstrapServers);
 
                             return broker;
