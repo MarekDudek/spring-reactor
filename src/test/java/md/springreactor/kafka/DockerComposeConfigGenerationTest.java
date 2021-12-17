@@ -1,8 +1,5 @@
 package md.springreactor.kafka;
 
-import com.google.common.reflect.TypeToken;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.yaml.snakeyaml.DumperOptions;
@@ -34,11 +31,6 @@ public class DockerComposeConfigGenerationTest
     }
 
     private static final Yaml YAML = new Yaml(OPTIONS);
-    private static final Gson GSON = new GsonBuilder().
-            registerTypeAdapter(new TypeToken<Map<String, Object>>()
-            {
-            }.getType(), new DoubleToIntDeserializer()).
-            create();
 
     @Test
     void original_to_equivalent() throws IOException

@@ -1,0 +1,36 @@
+{
+  "confluent_platform_format": {
+    "title": "Confluent Platform format",
+    "description": "Log format used by Confluent Platform services",
+    "url": "",
+    "regex": {
+      "basic": {
+        "pattern": "^\\[(?<timestamp>\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2},\\d{3})\\]\\s+(?<level>\\w*)\\s+(?<body>.*)$"
+      }
+    },
+    "level-field": "level",
+    "level": {
+      "error": "ERROR",
+      "warning": "WARN",
+      "info": "INFO",
+      "debug": "DEBUG",
+      "trace": "TRACE"
+    },
+    "value": {
+      "level": {
+        "kind": "string",
+        "identifier": true
+      },
+      "body": {
+        "kind": "string"
+      }
+    },
+    "sample": [
+      {
+        "line": "[2021-12-17 13:06:33,891] INFO Client environment:java.compiler=<NA> (org.apache.zookeeper.ZooKeeper)",
+        "line": "[2021-12-17 13:06:33,893] INFO Initiating client connection, connectString=zookeeper:2181 sessionTimeout=18000 watcher=kafka.zookeeper.ZooKeeperClient$ZooKeeperClientWatcher$@7e75bf2d (org.apache.zookeeper.ZooKeeper)",
+        "line": "[2021-12-17 13:06:34,032] INFO [feature-zk-node-event-process-thread]: Starting (kafka.server.FinalizedFeatureChangeListener$ChangeNotificationProcessorThread)"
+      }
+    ]
+  }
+}
