@@ -4,16 +4,20 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import md.springreactor.kafka.docker.Compose;
 import md.springreactor.kafka.docker.MultilineString;
-import md.springreactor.kafka.docker.Renderer;
 import md.springreactor.kafka.docker.Service;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.yaml.snakeyaml.DumperOptions;
+import org.yaml.snakeyaml.Yaml;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.io.*;
+import java.util.Map;
 
+import static java.lang.System.out;
 import static java.util.Collections.singletonList;
+import static md.springreactor.kafka.docker.Renderer.MAPPER;
+import static md.springreactor.kafka.docker.Renderer.writeToString;
+import static org.yaml.snakeyaml.DumperOptions.FlowStyle.BLOCK;
 
 @Disabled
 public class DockerComposeConfigGenerationTest
@@ -22,9 +26,31 @@ public class DockerComposeConfigGenerationTest
     @Test
     void confluentPlatformKafka() throws IOException
     {
-        String output = Renderer.render(compose());
-        Files.write(Paths.get("./src/test/resources/docker/confluent-platform-generated.yaml"), output.getBytes());
-        System.out.println(output);
+        Compose compose = compose();
+        out.println(writeToString(compose));
+        MAPPER.writeValue(new File("./src/test/resources/docker/confluent-platform-generated.yaml"), compose);
+    }
+
+    @Test
+    void read() throws IOException
+    {
+        Compose compose = MAPPER.readValue(new File("./src/test/resources/docker/confluent-platform-generated.yaml"), Compose.class);
+        out.println(compose);
+    }
+
+    @Test
+    void snake() throws IOException
+    {
+        DumperOptions options = new DumperOptions();
+        options.setPrettyFlow(true);
+        options.setDefaultFlowStyle(BLOCK);
+        Yaml yaml = new Yaml(options);
+        ClassLoader classLoader = getClass().getClassLoader();
+        InputStream stream = classLoader.getResourceAsStream("docker/confluent-platform-orig.yml");
+        Map<String, Object> map = yaml.load(stream);
+        out.println(map);
+        Writer output = new PrintWriter("./src/test/resources/docker/confluent-platform-generated.yaml");
+        yaml.dump(map, output);
     }
 
     private Compose compose()

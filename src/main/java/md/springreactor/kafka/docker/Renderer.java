@@ -12,17 +12,22 @@ public enum Renderer
     ;
 
 
+    private static final YAMLFactory FACTORY =
+            new YAMLFactory().
+                    enable(MINIMIZE_QUOTES).
+                    enable(ALWAYS_QUOTE_NUMBERS_AS_STRINGS);
 
-    public static String render(Object object) throws JsonProcessingException
+    public static final ObjectMapper MAPPER =
+            new ObjectMapper(FACTORY);
+
+    public static String writeToString(Object object) throws JsonProcessingException
     {
-        YAMLFactory factory =
-                new YAMLFactory().
-                        enable(MINIMIZE_QUOTES).
-                        enable(ALWAYS_QUOTE_NUMBERS_AS_STRINGS);
-        ObjectMapper mapper = new ObjectMapper(factory);
-        return mapper.
+        return MAPPER.
                 findAndRegisterModules().
                 writerWithDefaultPrettyPrinter().
                 writeValueAsString(object);
+    }
+
+    public static void read() {
     }
 }

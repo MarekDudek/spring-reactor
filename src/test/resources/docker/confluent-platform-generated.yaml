@@ -1,5 +1,4 @@
----
-version: "2"
+version: '2'
 services:
   zookeeper:
     image: confluentinc/cp-zookeeper:7.0.1
@@ -22,8 +21,8 @@ services:
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: "PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT"
-      KAFKA_ADVERTISED_LISTENERS: "PLAINTEXT://broker:29092,PLAINTEXT_HOST://localhost:9092"
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://broker:29092,PLAINTEXT_HOST://localhost:9092
       KAFKA_METRIC_REPORTERS: io.confluent.metrics.reporter.ConfluentMetricsReporter
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
@@ -36,7 +35,7 @@ services:
       KAFKA_CONFLUENT_SCHEMA_REGISTRY_URL: http://schema-registry:8081
       CONFLUENT_METRICS_REPORTER_BOOTSTRAP_SERVERS: broker:29092
       CONFLUENT_METRICS_REPORTER_TOPIC_REPLICAS: 1
-      CONFLUENT_METRICS_ENABLE: "true"
+      CONFLUENT_METRICS_ENABLE: 'true'
       CONFLUENT_SUPPORT_CUSTOMER_ID: anonymous
   schema-registry:
     image: confluentinc/cp-schema-registry:7.0.1
@@ -77,8 +76,8 @@ services:
       CLASSPATH: /usr/share/java/monitoring-interceptors/monitoring-interceptors-7.0.1.jar
       CONNECT_PRODUCER_INTERCEPTOR_CLASSES: io.confluent.monitoring.clients.interceptor.MonitoringProducerInterceptor
       CONNECT_CONSUMER_INTERCEPTOR_CLASSES: io.confluent.monitoring.clients.interceptor.MonitoringConsumerInterceptor
-      CONNECT_PLUGIN_PATH: "/usr/share/java,/usr/share/confluent-hub-components"
-      CONNECT_LOG4J_LOGGERS: "org.apache.zookeeper=ERROR,org.I0Itec.zkclient=ERROR,org.reflections=ERROR"
+      CONNECT_PLUGIN_PATH: /usr/share/java,/usr/share/confluent-hub-components
+      CONNECT_LOG4J_LOGGERS: org.apache.zookeeper=ERROR,org.I0Itec.zkclient=ERROR,org.reflections=ERROR
   control-center:
     image: confluentinc/cp-enterprise-control-center:7.0.1
     hostname: control-center
@@ -121,8 +120,8 @@ services:
       KSQL_CONSUMER_INTERCEPTOR_CLASSES: io.confluent.monitoring.clients.interceptor.MonitoringConsumerInterceptor
       KSQL_KSQL_CONNECT_URL: http://connect:8083
       KSQL_KSQL_LOGGING_PROCESSING_TOPIC_REPLICATION_FACTOR: 1
-      KSQL_KSQL_LOGGING_PROCESSING_TOPIC_AUTO_CREATE: "true"
-      KSQL_KSQL_LOGGING_PROCESSING_STREAM_AUTO_CREATE: "true"
+      KSQL_KSQL_LOGGING_PROCESSING_TOPIC_AUTO_CREATE: 'true'
+      KSQL_KSQL_LOGGING_PROCESSING_STREAM_AUTO_CREATE: 'true'
   ksqldb-cli:
     image: confluentinc/cp-ksqldb-cli:7.0.1
     container_name: ksqldb-cli
@@ -141,24 +140,24 @@ services:
     - broker
     - schema-registry
     - connect
+    command: bash -c 'echo Waiting for Kafka to be ready... && cub kafka-ready -b
+      broker:29092 1 40 && echo Waiting for Confluent Schema Registry to be ready...
+      && cub sr-ready schema-registry 8081 40 && echo Waiting a few seconds for topic
+      creation to finish... && sleep 11 && tail -f /dev/null'
     environment:
       KSQL_CONFIG_DIR: /etc/ksql
       STREAMS_BOOTSTRAP_SERVERS: broker:29092
       STREAMS_SCHEMA_REGISTRY_HOST: schema-registry
       STREAMS_SCHEMA_REGISTRY_PORT: 8081
-    command: bash -c 'echo Waiting for Kafka to be ready... && cub kafka-ready -b
-      broker:29092 1 40 && echo Waiting for Confluent Schema Registry to be ready...
-      && cub sr-ready schema-registry 8081 40 && echo Waiting a few seconds for topic
-      creation to finish... && sleep 11 && tail -f /dev/null'
   rest-proxy:
     image: confluentinc/cp-kafka-rest:7.0.1
-    hostname: rest-proxy
-    container_name: rest-proxy
     depends_on:
     - broker
     - schema-registry
     ports:
     - 8082:8082
+    hostname: rest-proxy
+    container_name: rest-proxy
     environment:
       KAFKA_REST_HOST_NAME: rest-proxy
       KAFKA_REST_BOOTSTRAP_SERVERS: broker:29092
