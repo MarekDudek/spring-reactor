@@ -11,6 +11,8 @@ public enum Renderer
 {
     ;
 
+
+
     public static String render(Object object) throws JsonProcessingException
     {
         YAMLFactory factory =
