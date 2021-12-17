@@ -51,6 +51,10 @@ public class DockerComposeConfigGenerationTest
         Map<String, Object> deepCopy = GSON.fromJson(GSON.toJson(compose), Map.class);
         Map<String, Object> services = (Map<String, Object>) deepCopy.get("services");
 
+        Map<String, Object> zookeeper = (Map<String, Object>) services.get("zookeeper");
+        services.remove("zookeeper");
+        services.put("zookeeper", zookeeper);
+
         Map<String, Object> oldBroker = (Map<String, Object>) services.get("broker");
         services.remove("broker");
 
