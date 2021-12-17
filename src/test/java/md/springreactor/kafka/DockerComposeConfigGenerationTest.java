@@ -34,6 +34,7 @@ public class DockerComposeConfigGenerationTest
                         put("zookeeper", zookeeper()).
                         put("broker", broker()).
                         put("schema-registry", schemaRegistry()).
+                        put("connect", connect()).
                         build()).
                 build();
     }
@@ -95,6 +96,38 @@ public class DockerComposeConfigGenerationTest
                         put("SCHEMA_REGISTRY_HOST_NAME", "schema-registry").
                         put("SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS", "broker:29092").
                         put("SCHEMA_REGISTRY_LISTENERS", "http://0.0.0.0:8081").
+                        build()).
+                build();
+    }
+
+    private Service connect()
+    {
+        return Service.builder().
+                image("cnfldemos/cp-server-connect-datagen:0.5.0-6.2.0").
+                hostname("connect").
+                container_name("connect").
+                depends_on(ImmutableList.of("broker", "schema-registry")).
+                ports(singletonList("8083:8083")).
+                environment(ImmutableMap.<String, Object>builder().
+                        put("CONNECT_BOOTSTRAP_SERVERS", "broker:29092").
+                        put("CONNECT_REST_ADVERTISED_HOST_NAME", "connect").
+                        put("CONNECT_REST_PORT", 8083).
+                        put("CONNECT_GROUP_ID", "compose-connect-group").
+                        put("CONNECT_CONFIG_STORAGE_TOPIC", "docker-connect-configs").
+                        put("CONNECT_CONFIG_STORAGE_REPLICATION_FACTOR", 1).
+                        put("CONNECT_OFFSET_FLUSH_INTERVAL_MS", 10000).
+                        put("CONNECT_OFFSET_STORAGE_TOPIC", "docker-connect-offsets").
+                        put("CONNECT_OFFSET_STORAGE_REPLICATION_FACTOR", 1).
+                        put("CONNECT_STATUS_STORAGE_TOPIC", "docker-connect-status").
+                        put("CONNECT_STATUS_STORAGE_REPLICATION_FACTOR", 1).
+                        put("CONNECT_KEY_CONVERTER", "org.apache.kafka.connect.storage.StringConverter").
+                        put("CONNECT_VALUE_CONVERTER", "io.confluent.connect.avro.AvroConverter").
+                        put("CONNECT_VALUE_CONVERTER_SCHEMA_REGISTRY_URL", "http://schema-registry:8081").
+                        put("CLASSPATH", "/usr/share/java/monitoring-interceptors/monitoring-interceptors-7.0.1.jar").
+                        put("CONNECT_PRODUCER_INTERCEPTOR_CLASSES", "io.confluent.monitoring.clients.interceptor.MonitoringProducerInterceptor").
+                        put("CONNECT_CONSUMER_INTERCEPTOR_CLASSES", "io.confluent.monitoring.clients.interceptor.MonitoringConsumerInterceptor").
+                        put("CONNECT_PLUGIN_PATH", "/usr/share/java,/usr/share/confluent-hub-components").
+                        put("CONNECT_LOG4J_LOGGERS", "org.apache.zookeeper=ERROR,org.I0Itec.zkclient=ERROR,org.reflections=ERROR").
                         build()).
                 build();
     }
